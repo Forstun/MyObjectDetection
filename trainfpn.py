@@ -36,6 +36,7 @@ transform_train = transforms.Compose([
 ])
 
 transform_test = transforms.Compose([
+    transforms.Resize(224),
     transforms.ToTensor(),
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 ])
@@ -67,7 +68,7 @@ if __name__ == "__main__":
         with open("log.txt", "w")as f2:
             for epoch in range(pre_epoch, EPOCH):
                 print('\nEpoch: %d' % (epoch + 1))
-                y = torch.zeros((64,512,4,4),device=device)
+                y = torch.zeros((64,256,56,56),device=device)
                 net.train()
                 sum_loss = 0.0
                 correct = 0.0
@@ -80,24 +81,24 @@ if __name__ == "__main__":
                     optimizer.zero_grad()
                     print('inputs',inputs.size())
                     print(i)
-                    # if i == 0 :
-                    #     outputs= net(inputs,y)
+                    if i == 0 :
+                        outputs= net(inputs,y)
                         
-                    # if i > 0 :
-                    #     outputs= net(inputs,y)
+                    if i > 0 :
+                        outputs= net(inputs,y)
                
-                    # y=outputs[1].detach()
+                    y=outputs[1].detach()
                     
-                    outputs=net(inputs)
-                    # loss = criterion(outputs[0], labels)
+                    # outputs=net(inputs)
+                    loss = criterion(outputs[0], labels)
                     print('lbs',labels)
-                    loss = criterion(outputs, labels)
+                    # loss = criterion(outputs, labels)
                     loss.backward()
                     optimizer.step()
 
                     # 每训练1个batch打印一次loss和准确率
                     sum_loss += loss.item()
-                    _, predicted = torch.max(outputs.data, 1)
+                    _, predicted = torch.max(outputs[0].data, 1)
                     total += labels.size(0)
                     correct += predicted.eq(labels.data).cpu().sum()
                     print('[epoch:%d, iter:%d] Loss: %.03f | Acc: %.3f%% '
@@ -111,6 +112,7 @@ if __name__ == "__main__":
                 print("Waiting Test!")
                 with torch.no_grad():
                     # y = torch.zeros((100,512,4,4),device=device)
+                    y = torch.zeros((100,256,56,56),device=device)
                     correct = 0
                     total = 0
                     for data in testloader:
@@ -119,7 +121,7 @@ if __name__ == "__main__":
                         images, labels = images.to(device), labels.to(device)
                         outputs = net(images,y)
                         # 取得分最高的那个类 (outputs.data的索引号)
-                        _, predicted = torch.max(outputs.data, 1)
+                        _, predicted = torch.max(outputs[0].data, 1)
                         total += labels.size(0)
                         correct += (predicted == labels).sum()
                     print('测试分类准确率为：%.3f%%' % (100 * correct / total))

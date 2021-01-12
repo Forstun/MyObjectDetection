@@ -101,29 +101,29 @@ class FPN(nn.Module):
         _,_,H,W = y.size()
         return F.interpolate(x,size=(H,W),mode='bilinear')
 
-    def forward(self, x):
+    def forward(self, x, y):
         # Bottom-up
         c1 = F.relu(self.bn1(self.conv1(x)))
-        print('c1',c1.shape)
+        print('c1',c1.shape) #[64, 64, 112, 112]
         c1 = F.max_pool2d(c1, kernel_size=3, stride=2, padding=1)
-        print('c1',c1.shape)
+        print('c1',c1.shape) #[64, 64, 56, 56]
         c2 = self.layer1(c1)
-        print('c2',c2.shape)
+        print('c2',c2.shape) #[64, 256, 56, 56]
         c3 = self.layer2(c2)
-        print('c3',c3.shape)
+        print('c3',c3.shape) #[64, 512, 28, 28]
         c4 = self.layer3(c3)
-        print('c4',c4.shape)
+        print('c4',c4.shape) #[64, 1024, 14, 14]
         c5 = self.layer4(c4)
-        print('c5',c5.shape)
+        print('c5',c5.shape) #[64, 2048, 7, 7]
         # Top-down
         p5 = self.toplayer(c5)
-        print('p5',p5.shape)
+        print('p5',p5.shape) #[64, 256, 7, 7]
         p4 = self._upsample_add(p5, self.latlayer1(c4))
-        print('p4',p4.shape)
+        print('p4',p4.shape) #[64, 256, 14, 14]
         p3 = self._upsample_add(p4, self.latlayer2(c3))
-        print('p3',p3.shape)
+        print('p3',p3.shape) #[64, 256, 28, 28]
         p2 = self._upsample_add(p3, self.latlayer3(c2))
-        print('p2',p2.shape)
+        print('p2',p2.shape) #[64, 256, 56, 56]
         # Smooth
         p4 = self.smooth1(p4)
         p3 = self.smooth2(p3)
@@ -136,7 +136,7 @@ class FPN(nn.Module):
         fp1=self.smooth3(fp1)
         fp1=self._upsample(fp1,p2)
         fp2=self.k2*fp1+p2
-        fp2=self.smooth3(fp2)
+        pp2=self.smooth3(fp2)
         print('fp2',fp2.size())
         #become classfication
         x = self.avgpool(fp2)
@@ -146,7 +146,7 @@ class FPN(nn.Module):
         x = self.fc(x)
         print('x',x.size())
 
-        return x
+        return x,pp2
         
 def FPN50():
     return FPN(Bottleneck, [3,4,6,3])
