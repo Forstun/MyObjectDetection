@@ -47,6 +47,7 @@ class FPN(nn.Module):
         super(FPN, self).__init__()
         self.in_planes = 64
         self.avgpool = nn.AvgPool2d(56)
+        self.aaa=nn.AvgPool2d(256,10)
         self.fc = nn.Linear(256, 10)
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
@@ -143,7 +144,8 @@ class FPN(nn.Module):
         print('av',x.shape)
         x = x.view(x.size(0), -1)
         print('x',x.size())
-        x = self.fc(x)
+        # x = self.fc(x)
+        x=self.aaa(x)
         print('x',x.size())
 
         return x,pp2
@@ -153,8 +155,8 @@ def FPN50():
 
 
 
-# x=torch.randn(64,3,224,224)
-    
-# net=FPN50()
-# output=net(x)
+x=torch.randn(64,3,224,224)
+y = torch.zeros((64,256,56,56))    
+net=FPN50()
+output=net(x,y)
 
