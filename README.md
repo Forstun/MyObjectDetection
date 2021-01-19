@@ -7,4 +7,4 @@ step2: Use FPN+classification by approach
 step3: Use Faster-Rcnn by FPN-approach
 
 Myapproach:
-![wt](approach.png)
+![wt](E:\Mycifar10\show_img\approach.png)
