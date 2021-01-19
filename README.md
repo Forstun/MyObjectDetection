@@ -6,4 +6,5 @@ step2: Use FPN+classification by approach
 
 step3: Use Faster-Rcnn by FPN-approach
 
-![pp](catdog.jpg)
+Myapproach:
+![pp](show_img\approach.png)
