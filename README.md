@@ -6,4 +6,4 @@ step2: Use FPN+classification by approach
 
 step3: Use Faster-Rcnn by FPN-approach
 
-![image](approach.png)
+![test](bus.jpg)
